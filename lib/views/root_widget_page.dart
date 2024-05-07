@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider_student_db/provider/add_student_provider.dart';
+import 'package:provider_student_db/provider/edit_student_provider.dart';
 import 'package:provider_student_db/provider/home_provider.dart';
 import 'package:provider_student_db/views/home/home_page.dart';
 
@@ -16,6 +17,9 @@ class RootWidgetPage extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => AddStudentProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => EditStudentProvider(),
         ),
       ],
       child: MaterialApp(

@@ -13,7 +13,7 @@ class StudentProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const TextWidgetCommon(
-          text: "Student Record",
+          text: "Student Profile",
           color: Colors.black,
           fontWeight: FontWeight.bold,
           fontSize: 23,

@@ -5,9 +5,9 @@ import 'package:provider_student_db/components/common/text_widget_common.dart';
 import 'package:provider_student_db/components/delete_dialog.dart';
 import 'package:provider_student_db/components/home/add_student_button_home.dart';
 import 'package:provider_student_db/components/home/search_bar_home.dart';
-import 'package:provider_student_db/components/snackbar.dart';
 import 'package:provider_student_db/constants/colors/colors.dart';
 import 'package:provider_student_db/constants/height_width/height_width.dart';
+import 'package:provider_student_db/provider/edit_student_provider.dart';
 import 'package:provider_student_db/provider/home_provider.dart';
 import 'package:provider_student_db/views/add_edit/edit_student_page.dart';
 import 'package:provider_student_db/views/profile/student_profile_page.dart';
@@ -52,8 +52,8 @@ class HomePage extends StatelessWidget {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => StudentProfilePage(
-                              studentModel:
-                                  homeProvider.studentDataList[index]),
+                            studentModel: homeProvider.studentDataList[index],
+                          ),
                         ),
                       );
                     },
@@ -80,26 +80,36 @@ class HomePage extends StatelessWidget {
                       children: [
                         IconButton(
                           onPressed: () {
-                            Navigator.of(context)
-                                .push(
-                              MaterialPageRoute(
-                                builder: (context) => EditStudentProfilePage(
-                                  studentModel:
-                                      homeProvider.studentDataList[index],
-                                ),
-                              ),
-                            )
-                                .then(
-                              (value) {
-                                if (value != null) {
-                                  homeProvider.getAllStudentDetails();
-                                  showSnackbarAfterDataFetch(
-                                    context: context,
-                                    text: "Data Successfully Saved",
-                                  );
-                                }
-                              },
+                            final editStudentProvider =
+                                Provider.of<EditStudentProvider>(
+                              context,
+                              listen: false,
                             );
+                            editStudentProvider.fetchAvailableData(
+                              studentDataBaseModel:
+                                  homeProvider.studentDataList[index],
+                            );
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return EditStudentProfilePage(
+                                    studentModel:
+                                        homeProvider.studentDataList[index],
+                                  );
+                                },
+                              ),
+                            );
+                            // .then(
+                            //   (value) {
+                            //     if (value != null) {
+                            //       homeProvider.getAllStudentDetails();
+                            //       showSnackbarAfterDataFetch(
+                            //         context: context,
+                            //         text: "Data Successfully Saved",
+                            //       );
+                            //     }
+                            //   },
+                            // );
                           },
                           icon: Icon(
                             Icons.edit,
@@ -123,7 +133,9 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
-        floatingActionButton: AddStudentButtonHome(homeProvider: homeProvider),
+        floatingActionButton: AddStudentButtonHome(
+          homeProvider: homeProvider,
+        ),
       ),
     );
   }

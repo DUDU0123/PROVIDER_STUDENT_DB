@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -7,37 +8,40 @@ import 'package:provider_student_db/constants/colors/colors.dart';
 import 'package:provider_student_db/model/student_database_model.dart';
 import 'package:provider_student_db/provider/home_provider.dart';
 
-class AddStudentProvider extends ChangeNotifier {
-
+class EditStudentProvider extends ChangeNotifier {
   File? studentImage;
   final nameController = TextEditingController();
   final ageController = TextEditingController();
   final placeController = TextEditingController();
   final standardController = TextEditingController();
 
-  pickImageFromGallery() async {
-    final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedImage != null) {
-      studentImage = File(pickedImage.path);
-    } else {
-      // Clear the image if no image is picked
-      studentImage = null;
-    }
-    notifyListeners();
-  }
-
-  void clearAll() {
-    clearImage();
-    nameController.text = '';
-    ageController.text = '';
-    placeController.text = '';
-    standardController.text = '';
+  fetchAvailableData({required StudentDataBaseModel studentDataBaseModel}) {
+    nameController.text = studentDataBaseModel.name ?? '';
+    ageController.text = studentDataBaseModel.age ?? '';
+    placeController.text = studentDataBaseModel.place ?? '';
+    standardController.text = studentDataBaseModel.standard ?? '';
     notifyListeners();
   }
 
   void clearImage() {
     studentImage = null;
+    notifyListeners();
+  }
+
+  pickImageFromGallery() async {
+    final pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedImage != null) {
+      studentImage = File(pickedImage.path);
+    }
+    notifyListeners();
+  }
+
+  void clearAll() {
+    nameController.text = '';
+    ageController.text = '';
+    placeController.text = '';
+    standardController.text = '';
     notifyListeners();
   }
 
@@ -47,6 +51,7 @@ class AddStudentProvider extends ChangeNotifier {
     required bool agevalidate,
     required bool standardvalidate,
     required bool placevalidate,
+    required StudentDataBaseModel studentModel,
   }) async {
     final homeProvider = Provider.of<HomeProvider>(context, listen: false);
 
@@ -68,13 +73,13 @@ class AddStudentProvider extends ChangeNotifier {
         stringRegExp.hasMatch(placeController.text)) {
       var student = StudentDataBaseModel();
       student.profileimage = studentImage != null
-          ? await File(studentImage!.path).readAsBytes()
-          : null;
+          ? studentImage!.readAsBytesSync()
+          : studentModel.profileimage;
       student.name = nameController.text;
       student.age = ageController.text;
       student.place = placeController.text;
       student.standard = standardController.text;
-      await homeProvider.dbService.addStudentToDB(student);
+      await homeProvider.dbService.updateStudentData(student);
       homeProvider.getAllStudentDetails();
       Navigator.pop(
         context,
