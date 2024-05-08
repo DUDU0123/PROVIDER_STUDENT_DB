@@ -86,6 +86,7 @@ class HomePage extends StatelessWidget {
                               listen: false,
                             );
                             editStudentProvider.fetchAvailableData(
+                              uintStudentImage: homeProvider.studentDataList[index].profileimage,
                               studentDataBaseModel:
                                   homeProvider.studentDataList[index],
                             );
@@ -99,17 +100,6 @@ class HomePage extends StatelessWidget {
                                 },
                               ),
                             );
-                            // .then(
-                            //   (value) {
-                            //     if (value != null) {
-                            //       homeProvider.getAllStudentDetails();
-                            //       showSnackbarAfterDataFetch(
-                            //         context: context,
-                            //         text: "Data Successfully Saved",
-                            //       );
-                            //     }
-                            //   },
-                            // );
                           },
                           icon: Icon(
                             Icons.edit,

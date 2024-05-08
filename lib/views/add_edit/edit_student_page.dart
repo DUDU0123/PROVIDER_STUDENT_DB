@@ -1,111 +1,63 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider_student_db/components/common/text_field_common_widget.dart';
+import 'package:provider_student_db/components/common/common_appbar_widget.dart';
+import 'package:provider_student_db/components/common/image_avatar.dart';
 import 'package:provider_student_db/components/common/text_widget_common.dart';
+import 'package:provider_student_db/components/common/textfields_widget.dart';
+import 'package:provider_student_db/components/snackbar.dart';
 import 'package:provider_student_db/constants/colors/colors.dart';
 import 'package:provider_student_db/constants/height_width/height_width.dart';
+import 'package:provider_student_db/enums/pagetype_enum.dart';
 import 'package:provider_student_db/model/student_database_model.dart';
+import 'package:provider_student_db/provider/add_student_provider.dart';
 import 'package:provider_student_db/provider/edit_student_provider.dart';
+import 'package:provider_student_db/provider/home_provider.dart';
 
 class EditStudentProfilePage extends StatelessWidget {
-  const EditStudentProfilePage({super.key, required this.studentModel});
+  EditStudentProfilePage({super.key, required this.studentModel});
   final StudentDataBaseModel studentModel;
-  final bool _namevalidate = true;
-  final bool _agevalidate = true;
-  final bool _placevalidate = true;
-  final bool _standardvalidate = true;
+
+  File? studentImage;
+
   @override
   Widget build(BuildContext context) {
+    final addStudentProvider =
+        Provider.of<AddStudentProvider>(context, listen: false);
     return Scaffold(
-      appBar: AppBar(
-        title: const TextWidgetCommon(
-          text: "Student Record",
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 23,
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: CommonAppBarWidget(
+          title: "Edit Student Details",
         ),
       ),
-      body: Consumer<EditStudentProvider>(
-        builder: (context, editStudentProvider, child) => SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-            child: Column(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+          child: Consumer<EditStudentProvider>(
+            builder: (context, editStudentProvider, child) => Column(
               children: [
                 studentModel.profileimage != null ||
                         editStudentProvider.studentImage != null
-                    ? CircleAvatar(
-                        radius: 60,
-                        backgroundImage:
+                    ? ImageAvatar(
+                        editStudentProvider: editStudentProvider,
+                        backgroundImage: 
                             editStudentProvider.studentImage != null
                                 ? MemoryImage(editStudentProvider.studentImage!
                                     .readAsBytesSync())
                                 : MemoryImage(studentModel.profileimage!),
-                        child: Center(
-                          child: IconButton(
-                            onPressed: () async {
-                              editStudentProvider.pickImageFromGallery();
-                            },
-                            icon: Icon(
-                              Icons.camera_alt_outlined,
-                              size: 35,
-                              color: kBlack,
-                            ),
-                          ),
-                        ),
                       )
-                    : CircleAvatar(
-                        radius: 80,
+                    : ImageAvatar(
+                        editStudentProvider: editStudentProvider,
                         backgroundImage: const AssetImage(
                           "assets/person.png",
                         ),
-                        child: IconButton(
-                          onPressed: () async {
-                            editStudentProvider.pickImageFromGallery();
-                          },
-                          icon: Icon(
-                            Icons.camera_alt_outlined,
-                            size: 35,
-                            color: kWhite,
-                          ),
-                        ),
                       ),
-                TextWidgetCommon(
-                  text: "Edit Student Details",
-                  color: kBlack,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
-                ),
                 kHeight15,
-                TextFieldCommonWidget(
-                  errorText: !_namevalidate ? "Name can't be Empty" : null,
-                  keyboardType: TextInputType.text,
-                  nameController: editStudentProvider.nameController,
-                  hintText: "Name",
-                  labelText: "Enter name",
-                ),
-                kHeight15,
-                TextFieldCommonWidget(
-                  errorText: !_agevalidate ? "Age can't be Empty" : null,
-                  keyboardType: TextInputType.number,
-                  nameController: editStudentProvider.ageController,
-                  hintText: "Age",
-                  labelText: "Enter age",
-                ),
-                kHeight15,
-                TextFieldCommonWidget(
-                  errorText: !_placevalidate ? "Place can't be Empty" : null,
-                  keyboardType: TextInputType.text,
-                  nameController: editStudentProvider.placeController,
-                  hintText: "Place",
-                  labelText: "Enter place",
-                ),
-                kHeight15,
-                TextFieldCommonWidget(
-                  errorText: !_standardvalidate ? "Class can't be Empty" : null,
-                  keyboardType: TextInputType.text,
-                  nameController: editStudentProvider.standardController,
-                  hintText: "Class",
-                  labelText: "Enter class",
+                TextFieldsWidget(
+                  pageType: PageTypeEnum.editStudent,
+                  addStudentProvider: addStudentProvider,
+                  editStudentProvider: editStudentProvider,
                 ),
                 kHeight15,
                 Row(
@@ -113,19 +65,51 @@ class EditStudentProfilePage extends StatelessWidget {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(backgroundColor: kBlack),
                       onPressed: () async {
-                        final editStudentProvider =
-                            Provider.of<EditStudentProvider>(
-                          context,
-                          listen: false,
-                        );
+                        final homeProvider =
+                            Provider.of<HomeProvider>(context, listen: false);
                         editStudentProvider.saveData(
-                          studentModel: studentModel,
                           context: context,
-                          namevalidate: _namevalidate,
-                          agevalidate: _agevalidate,
-                          standardvalidate: _standardvalidate,
-                          placevalidate: _placevalidate,
+                          studentModel: studentModel,
                         );
+
+                        RegExp regExp =
+                            RegExp(r"^(0?[1-9]|[1-9][0-9]|[1][01][0-9]|120)$");
+                        RegExp stringRegExp = RegExp(r"^[^0-9,]*$");
+                        if (editStudentProvider.namevalidate &&
+                            editStudentProvider.agevalidate &&
+                            editStudentProvider.placevalidate &&
+                            editStudentProvider.standardvalidate &&
+                            regExp.hasMatch(
+                                editStudentProvider.ageController.text) &&
+                            stringRegExp.hasMatch(
+                                editStudentProvider.nameController.text) &&
+                            stringRegExp.hasMatch(
+                                editStudentProvider.placeController.text)) {
+                          var student = StudentDataBaseModel();
+                          student.profileimage =
+                              editStudentProvider.studentImage != null
+                                  ? editStudentProvider.studentImage!
+                                      .readAsBytesSync()
+                                  : studentModel.profileimage;
+                          student.id = studentModel.id;
+                          student.name =
+                              editStudentProvider.nameController.text;
+                          student.age = editStudentProvider.ageController.text;
+                          student.place =
+                              editStudentProvider.placeController.text;
+                          student.standard =
+                              editStudentProvider.standardController.text;
+                          await homeProvider.dbService
+                              .updateStudentData(student);
+                          homeProvider.getAllStudentDetails();
+                          Navigator.pop(context);
+                          showSnackbarAfterDataFetch(
+                              text: "Updated Successfully", context: context);
+                        } else {
+                          showSnackbarAfterDataFetch(
+                              text: "Fill all fields correctly",
+                              context: context);
+                        }
                       },
                       child: TextWidgetCommon(
                         text: "Save",
@@ -136,7 +120,6 @@ class EditStudentProfilePage extends StatelessWidget {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(backgroundColor: kBlack),
                       onPressed: () {
-                        editStudentProvider.clearImage();
                         editStudentProvider.clearAll();
                       },
                       child: TextWidgetCommon(

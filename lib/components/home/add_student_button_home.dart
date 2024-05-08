@@ -30,15 +30,6 @@ class AddStudentButtonHome extends StatelessWidget {
             builder: (context) => const AddStudent(pageType: PageTypeEnum.addStudent,),
           ),
         );
-        //     .then((value) {
-        //   if (value != null) {
-        //     homeProvider.getAllStudentDetails();
-        //     showSnackbarAfterDataFetch(
-        //       context: context,
-        //       text: "Data Successfully Saved",
-        //     );
-        //   }
-        // });
       },
       child: Icon(
         Icons.add,

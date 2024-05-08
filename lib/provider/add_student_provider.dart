@@ -14,6 +14,10 @@ class AddStudentProvider extends ChangeNotifier {
   final ageController = TextEditingController();
   final placeController = TextEditingController();
   final standardController = TextEditingController();
+     bool namevalidate = true;
+   bool agevalidate = true;
+   bool placevalidate = true;
+   bool standardvalidate = true;
 
   pickImageFromGallery() async {
     final pickedImage =
@@ -43,10 +47,6 @@ class AddStudentProvider extends ChangeNotifier {
 
   saveData({
     required BuildContext context,
-    required bool namevalidate,
-    required bool agevalidate,
-    required bool standardvalidate,
-    required bool placevalidate,
   }) async {
     final homeProvider = Provider.of<HomeProvider>(context, listen: false);
 

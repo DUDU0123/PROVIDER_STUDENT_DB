@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider_student_db/components/common/text_field_common_widget.dart';
 import 'package:provider_student_db/components/common/text_widget_common.dart';
+import 'package:provider_student_db/components/common/textfields_widget.dart';
 import 'package:provider_student_db/constants/colors/colors.dart';
 import 'package:provider_student_db/constants/height_width/height_width.dart';
 import 'package:provider_student_db/enums/pagetype_enum.dart';
 import 'package:provider_student_db/provider/add_student_provider.dart';
+import 'package:provider_student_db/provider/edit_student_provider.dart';
 
 class AddStudent extends StatelessWidget {
   const AddStudent({
@@ -13,13 +14,10 @@ class AddStudent extends StatelessWidget {
     required this.pageType,
   });
   final PageTypeEnum pageType;
-  final bool _namevalidate = true;
-  final bool _agevalidate = true;
-  final bool _placevalidate = true;
-  final bool _standardvalidate = true;
 
   @override
   Widget build(BuildContext context) {
+    final editStudentProvider = Provider.of<EditStudentProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const TextWidgetCommon(
@@ -35,8 +33,6 @@ class AddStudent extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
             child: Column(
               children: [
-                // pageType == PageTypeEnum.addStudent
-                //     ?
                 CircleAvatar(
                   backgroundColor: const Color.fromARGB(255, 214, 255, 251),
                   radius: 60,
@@ -63,37 +59,10 @@ class AddStudent extends StatelessWidget {
                   fontSize: 25,
                 ),
                 kHeight15,
-                TextFieldCommonWidget(
-                  errorText: !_namevalidate ? "Name can't be Empty" : null,
-                  keyboardType: TextInputType.text,
-                  nameController: addStudentProvider.nameController,
-                  hintText: "Name",
-                  labelText: "Enter name",
-                ),
-                kHeight15,
-                TextFieldCommonWidget(
-                  errorText: !_agevalidate ? "Age can't be Empty" : null,
-                  keyboardType: TextInputType.number,
-                  nameController: addStudentProvider.ageController,
-                  hintText: "Age",
-                  labelText: "Enter age",
-                ),
-                kHeight15,
-                TextFieldCommonWidget(
-                  errorText: !_placevalidate ? "Place can't be Empty" : null,
-                  keyboardType: TextInputType.text,
-                  nameController: addStudentProvider.placeController,
-                  hintText: "Place",
-                  labelText: "Enter place",
-                ),
-                kHeight15,
-                TextFieldCommonWidget(
-                  errorText: !_standardvalidate ? "Class can't be Empty" : null,
-                  keyboardType: TextInputType.text,
-                  nameController: addStudentProvider.standardController,
-                  hintText: "Class",
-                  labelText: "Enter class",
-                ),
+                TextFieldsWidget(
+                    editStudentProvider: editStudentProvider,
+                    addStudentProvider: addStudentProvider,
+                    pageType: pageType,),
                 kHeight15,
                 Row(
                   children: [
@@ -107,10 +76,6 @@ class AddStudent extends StatelessWidget {
                         );
                         addStudentProvider.saveData(
                           context: context,
-                          namevalidate: _namevalidate,
-                          agevalidate: _agevalidate,
-                          standardvalidate: _standardvalidate,
-                          placevalidate: _placevalidate,
                         );
                       },
                       child: TextWidgetCommon(
