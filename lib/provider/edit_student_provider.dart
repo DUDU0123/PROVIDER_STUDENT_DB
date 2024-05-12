@@ -4,14 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:provider_student_db/model/student_database_model.dart';
 
 class EditStudentProvider extends ChangeNotifier {
-  File? _studentImage;
-  File? get studentImage => _studentImage;
+  File? studentImage;
 
-  void updateStudentImage(File newImage) {
-    _studentImage = newImage;
+  void updateStudentImage(File? newImage) {
+    studentImage = newImage;
     notifyListeners();
   }
-
   final nameController = TextEditingController();
   final ageController = TextEditingController();
   final placeController = TextEditingController();
@@ -36,7 +34,7 @@ class EditStudentProvider extends ChangeNotifier {
       tempFile.writeAsBytesSync(uintStudentImage);
 
       // Assign the File object to studentImage
-      _studentImage = tempFile;
+      studentImage = tempFile;
     }
     notifyListeners();
   }
@@ -46,6 +44,8 @@ class EditStudentProvider extends ChangeNotifier {
     ageController.text = '';
     placeController.text = '';
     standardController.text = '';
+    // Set studentImage to null
+    studentImage = null;
     notifyListeners();
   }
 

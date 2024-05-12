@@ -85,14 +85,16 @@ class HomePage extends StatelessWidget {
                               context,
                               listen: false,
                             );
-                            editStudentProvider.fetchAvailableData(
+                            
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  editStudentProvider.studentImage = null;
+                                  editStudentProvider.fetchAvailableData(
                               uintStudentImage: homeProvider.studentDataList[index].profileimage,
                               studentDataBaseModel:
                                   homeProvider.studentDataList[index],
                             );
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) {
                                   return EditStudentProfilePage(
                                     studentModel:
                                         homeProvider.studentDataList[index],

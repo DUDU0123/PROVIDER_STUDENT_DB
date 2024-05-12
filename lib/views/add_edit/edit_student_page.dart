@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider_student_db/components/common/common_appbar_widget.dart';
@@ -15,11 +14,8 @@ import 'package:provider_student_db/provider/edit_student_provider.dart';
 import 'package:provider_student_db/provider/home_provider.dart';
 
 class EditStudentProfilePage extends StatelessWidget {
-  EditStudentProfilePage({super.key, required this.studentModel});
+  const EditStudentProfilePage({super.key, required this.studentModel});
   final StudentDataBaseModel studentModel;
-
-  File? studentImage;
-
   @override
   Widget build(BuildContext context) {
     final addStudentProvider =
@@ -41,10 +37,12 @@ class EditStudentProfilePage extends StatelessWidget {
                         editStudentProvider.studentImage != null
                     ? ImageAvatar(
                         editStudentProvider: editStudentProvider,
-                        backgroundImage: 
+                        backgroundImage:
                             editStudentProvider.studentImage != null
-                                ? MemoryImage(editStudentProvider.studentImage!
-                                    .readAsBytesSync())
+                                ? MemoryImage(
+                                    editStudentProvider.studentImage!
+                                        .readAsBytesSync(),
+                                  )
                                 : MemoryImage(studentModel.profileimage!),
                       )
                     : ImageAvatar(
